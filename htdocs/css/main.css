@@ -1,0 +1,176 @@
+/* ----------------------------- */
+/* ALL */
+*{
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+    list-style: none;
+    box-sizing: border-box;
+}
+/* ----------------------------- */
+/* Header */
+
+body { 
+    font-family: Georgia, serif;
+    font-size: 14px;
+    background: gray;
+}
+
+
+label.logo{
+    color: white;
+    font-size: 30px;
+    padding: 0 10px;
+    font-weight: bold;
+    line-height: 60px;
+}
+
+.mainBanner{
+    background: black;
+    width: 100%;
+    height: 60px;
+    position: absolute;
+}
+
+.mainBanner ul{
+    float: right;
+    margin-right: 30px;
+}
+
+.mainBanner ul li{
+    display: inline-block;
+    line-height: 60px;
+    margin: 0 7px;
+}
+
+.mainBanner ul li a{
+    background: white;
+    color: black;
+    font-weight: bold;
+    padding: 4px 13px;
+    border-radius: 3px;
+    font-size: 14px
+}
+
+.mainBanner a:hover{
+    background: white;
+    transition: .3s;
+}
+
+nav{
+    background: white;
+    width: 100%;
+    height: 40px;
+    padding-top: 65px;
+    z-index: 10;
+
+}
+
+nav ul{
+    text-align: center;
+    background: black;
+}
+
+nav ul li{
+    display: inline-block;
+    line-height: 40px;
+    margin: 0 5px;
+}
+
+nav ul li a {
+    color: white;
+    font-size: 17px;
+    padding: 7px 13px;
+    border-radius: 3px;
+    z-index: 10;
+}
+
+nav a:hover{
+    background: lightblue;
+    transition: .3s;
+    color: black;
+}
+
+/* ----------------------------- */
+/* Content */
+
+.ContentDiv{
+    height: 600px;
+    margin-top: 125px;
+    z-index: 10;
+    display: flex;
+}
+
+.LoginSignup{
+    margin: auto;
+    min-height: 500px;
+    color: black;
+    width: 60%;
+    background: white;
+    border: black 5px;
+    border-style: solid;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.MainBody{
+    margin: auto;
+    min-height: 500px;
+    color: black;
+    width: 85%;
+    background: white;
+    border: black 5px;
+    border-style: solid;
+    border-radius: 10px;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.MainBody iframe{
+    margin: 15px;
+}
+
+/* ----------------------------- */
+/* Footer */
+
+footer{
+    position: absolute;
+    background: black;
+    margin-bottom: 0px;
+    height: 90px;
+    width: 100%;
+    margin-top: 100px;
+    text-align: center;
+    color: white;
+}
+
+footer h3, footer p, footer ul{
+    padding-top: 10px;
+}
+
+footer ul li{
+    display: inline-block;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+footer a i{
+    font-size: 1.1rem;
+    color: black;
+}
+/* ----------------------------- */
+
+@media all and (max-width: 750px ){
+    
+    .th, td {
+        padding: 0px;
+    }
+    
+    table {
+        font-size: 12px;
+    }
+}
+
+/* ----------------------------- */

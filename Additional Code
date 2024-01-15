@@ -1,0 +1,89 @@
+Additional Code
+
+SQL Stored Procedure - Signup
+---
+CREATE DEFINER=`billy.gaines`@`%` PROCEDURE `Signup`(IN Submitted_Username VARCHAR(45), IN Hashed_Password VARCHAR(255), IN Submitted_Verification_Key INT)
+BEGIN
+	DECLARE lastID INT;
+	IF EXISTS (SELECT 1 FROM Verification_Keys WHERE verification_key = Submitted_Verification_Key AND user_id IS NULL)
+	THEN
+		INSERT into Users (User_Username, Hashed_Password) VALUES (Submitted_Username, Hashed_Password);
+        SET lastID = LAST_INSERT_ID();
+		UPDATE Verification_Keys SET user_id = lastID WHERE verification_key = Submitted_Verification_Key;
+	END IF;
+END
+
+
+
+ThingSpeak Analysis - Weather Scrape
+---
+% Scrape a website to identify the current temperature in Natick. The
+% temperature is then written to another ThingSpeak channel.
+% Specify the url containing information on current temperature in Natick, MA, U.S.A.
+url = 'https://www.bbc.co.uk/weather/2633352';
+% TODO - Replace the [] with channel ID to write data to:
+writeChannelID = 2388766;
+% TODO - Enter the Write API Key between the '' below:
+writeAPIKey = 'FP951MVMXX0FKZIX';
+% Fetch data and parse it to find information of interest. Learn more about
+% the URLFILTER function by going to the Documentation tab on the right
+% side pane of this page.
+webText = webread(url);
+tempF = urlfilter(webText, '<span class="wr-value--temperature--c">');
+display(tempF, 'Temperature in York');
+% Write the temperature data to another channel specified by the
+% 'writeChannelID' variable
+display(['Note: To successfully write data to another channel, ',...
+    'assign the write channel ID and API Key to ''writeChannelID'' and ',...
+    '''writeAPIKey'' variables above. Also uncomment the line of code ',...
+    'containing ''thingSpeakWrite'' (remove ''%'' sign at the beginning of the line.)'])
+% Learn more about the THINGSPEAKWRITE function by going to the Documentation tab on
+% the right side pane of this page.
+thingSpeakWrite(writeChannelID, tempF, 'WriteKey', writeAPIKey);
+
+
+
+ThinkSpeak Analysis - Analysis Field Updates
+---
+% CONFIGURATION VARIABLES
+dataStreamChannelID = 2384242;                     % Vacant Room Energy Monitor
+dataStramReadAPIKey = 'CFC1Q39TZSL4UB9B';          % Vacant Room Energy Monitor
+
+weatherChannelID = 2388766;                        % Weather Temperature Scrape
+weatherReadAPIKey = 'YNMRT6IPBGANFYFY';            % Weather Temperature Scrape
+
+analysisChannelID = 2388406;                       % Vacant Room Energy Monitor Analysis
+analysisWriteAPIKey = 'NTWIYNNN8YNN8F2R';          % Vacant Room Energy Monitor Analysis
+
+TemperatureFieldID = 1;
+LightLevelFieldID = 2;
+OccupancyFieldID = 3;
+EstimatedEnergyFieldID = 4;
+
+% CALCULATE DAILY AVERAGE TEMPERATURE
+temperature = thingSpeakRead(dataStreamChannelID,'Fields',TemperatureFieldID,'NumMinutes',1440,'ReadKey',dataStramReadAPIKey); 
+avgTemperature = mean(temperature(~isnan(temperature)));
+display(avgTemperature,'Average Temperature'); % Display average
+
+% CALCULATE DAILY AVERAGE LIGHT LEVEL
+lightLevel = thingSpeakRead(dataStreamChannelID,'Fields',LightLevelFieldID,'NumMinutes',1440,'ReadKey',dataStramReadAPIKey); 
+avgLightLevel = mean(lightLevel(~isnan(lightLevel)));
+display(avgLightLevel,'Average Light Level'); % Display average
+
+% CALCULATE TIME ROOM IS OCCUPIED (BINARY VALUE 1 = OCCUPIED)
+occupancy = thingSpeakRead(dataStreamChannelID, 'ReadKey', dataStramReadAPIKey, 'Fields', OccupancyFieldID, 'NumMinutes', 1440);
+percentageTimeInUse = (sum(occupancy) / numel(occupancy)) * 100;
+display(percentageTimeInUse); % Display percentage
+
+% CALCULATE ESTIMATED ENERGY CONSUMPTION
+ExternalTemperature = thingSpeakRead(weatherChannelID, 'ReadKey', weatherReadAPIKey, 'NumPoints', 1);
+InternalExternalTempDiff = avgTemperature - ExternalTemperature;
+%---
+LightingEstJoulesPerSecond = avgLightLevel * 0.15;
+TemperatureEstJoulesPerSecond = InternalExternalTempDiff * 20;
+%---
+TotalEstJoulesPerSecond = LightingEstJoulesPerSecond + TemperatureEstJoulesPerSecond;
+display(TotalEstJoulesPerSecond);
+
+% WRITE DATA
+thingSpeakWrite(analysisChannelID, [avgTemperature, avgLightLevel, percentageTimeInUse, TotalEstJoulesPerSecond], 'Fields', [TemperatureFieldID, LightLevelFieldID, OccupancyFieldID, EstimatedEnergyFieldID], 'WriteKey', analysisWriteAPIKey);
